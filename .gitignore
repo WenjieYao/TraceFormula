@@ -274,3 +274,18 @@ TSWLatexianTemp*
 
 # Makeindex log files
 *.lpz
+
+
+# ignore DS_Store apple fie
+.DS_Store
+
+# ignore vscode file
+.vscode
+.ipynb_checkpoints
+
+# output file
+*results.txt
+*.vtu
+*.msh
+gvalue.txt
+PV/
