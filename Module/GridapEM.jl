@@ -41,11 +41,21 @@ export num_contributing_values
 export GridapParameters
 export GridapFE
 
+# Model functions
+export MatrixA
+export MatrixB
+export MatrixA0
+export MatrixOc
+export MatrixOl
+export VectorO
+export Sp
+
 include("Mesh_Periodic.jl")
 include("Mesh_CR.jl")
 include("Mesh_RR.jl")
 include("Control.jl")
 include("Helper.jl")
 include("GridapFE.jl")
+include("Model.jl")
 
 end

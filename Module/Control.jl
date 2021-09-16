@@ -7,12 +7,12 @@ struct ControllingParameters
     r::Vector{Float64}       # r = [rx, ry] filter radius
     β::Float64               # Threshold steepness
     η::Float64               # Threshold value
-    α::Vector{Float64}       # Equivalent loss term
+    α::Float64               # Equivalent loss term
     nparts::Int64            # Number of parts for paralell computing
     nkx::Int64               # Number of k points for k integral
     K::Int64                 # Number of contributing eigenvalues
     Amp::Float64             # Tuning amplitude for optimization
-    Dρ::Bool                 # Matrix D depend on design parameter or not
+    Bρ::Bool                 # Matrix B depend on design parameter or not
     ρv::Float64              # Volume constraint on design parameter ρ 
     c::Float64               # Foundary constraint parameter
     ηe::Float64              # Foundary constraint parameter
@@ -29,7 +29,7 @@ function Filter(ρ_vec; control, gridap)
             ∫(a_f(control.r, u, v))gridap.dΩ_d + ∫(v * u)gridap.dΩ, ∫(v * ρh)gridap.dΩ#, ∫( 0*v )gridap.dΓ_d
           end
         ρfh = solve(op)
-        return get_free_values(ρfh)
+        return get_free_dof_values(ρfh)
     else
         return ρ_vec
     end
@@ -49,12 +49,12 @@ end
 
 function VolumeConstraint(ρW::Vector, grad::Vector; control, gridap)
     ρ0 = ρW[1 : gridap.np]
-    ρf_vec = ρ_filter(ρ0; control, gridap)
+    ρf_vec = ρf_ρ0(ρ0; control, gridap)
     ρfh = FEFunction(gridap.FE_Pf, ρf_vec)
     
     if length(grad) > 0
         grad[gridap.np + 1 : end] = zeros(length(ρW) - gridap.np)
-        l_temp(v) = ∫(v * ((ρf -> dρtdρf(ρf; control)) ∘ ρfh))gridap.dΩ_d
+        l_temp(v) = ∫(v * ((ρf -> Dρtdρf(ρf; control)) ∘ ρfh))gridap.dΩ_d
         grad0 = assemble_vector(l_temp, gridap.FE_Pf)
         grad[1 : gridap.np] = Dgdρ(grad0; control, gridap)
     end
@@ -89,14 +89,14 @@ gc_LS(ph, ηd) = ph < ηd ? 0.0 : (ph - ηd)^2
 
 function LWConstraint(ρW::Vector, grad::Vector; control, gridap)
     ρ0 = ρW[1 : gridap.np]
-    ρf_vec = ρ_filter(ρ0; control, gridap)
+    ρf_vec = ρf_ρ0(ρ0; control, gridap)
     ρfh = FEFunction(gridap.FE_Pf, ρf_vec)
     ρh = (ρf -> Threshold(ρf; control)) ∘ ρfh
     if length(grad) > 0
         grad[gridap.np + 1 : end] = zeros(length(ρW) - gridap.np)
         l_temp(v) = ∫(v * ((ph -> gc_LW(ph, control.ηe)) ∘ ρfh) 
                     * ((g -> fg(g, control.c)) ∘ ∇(ρfh)) 
-                    * (((ρf -> dρtdρf(ρf; control)) ∘ ρfh) 
+                    * (((ρf -> Dρtdρf(ρf; control)) ∘ ρfh) 
                     + 2 * ρh / (ρfh - control.ηe)) 
                     - 2 * control.c * ρh * ((ph -> gc_LW(ph, control.ηe)) ∘ ρfh) 
                     * ((g -> fg(g, control.c)) ∘ ∇(ρfh)) * (∇(v) ⋅ ∇(ρfh)))gridap.dΩ_d

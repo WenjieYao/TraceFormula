@@ -6,11 +6,11 @@ Example paramters
 L = 1.0           # Length of the normal region
 λ = 1.0           # Wavelength (aribitrary unit)
 h1 = 1.0          # Height of the air region
-h2 = λ/2          # Height of the design region
+h2 = λ / 2        # Height of the design region
 h3 = 1.0          # Height of the substrate region
 dpml = 0.5        # Thickness of the PML
-ht = 0.5*h1       # Target position
-hs = λ/10         # Source position
+ht = 0.5 * h1     # Target position
+hs = λ / 10       # Source position
 
 # Characteristic length (controls the resolution, smaller the finer)
 resol = 25.0      # Number of points per wavelength

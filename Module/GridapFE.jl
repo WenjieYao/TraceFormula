@@ -20,7 +20,7 @@ struct GridapParameters
 end
 
 
-function GridapFE(meshfile, order, degree, diritags, neumanntags, targettags, sourcetags, flag_f)
+function GridapFE(meshfile, order, degree, diritags, neumanntags, targettags, sourcetags, flag_f = true)
     model = GmshDiscreteModel(meshfile)
 
     # Test and trial finite element function space
