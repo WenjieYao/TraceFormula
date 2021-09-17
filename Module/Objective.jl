@@ -186,11 +186,11 @@ function gρW_optimize(ρ_init, TOL = 1e-4, MAX_ITER = 500, IsQl = false; phys, 
         
         G_ii, W_raw, info = eigsolve(x -> MatrixG(x; A_mat, B_mat, O_mat), rand(ComplexF64, N), 5, :LM; krylovdim = 30)
         W_mat = rand(ComplexF64, N, control.K)
-        for ib = 1:5
+        for ib = 1 : 5
             W_mat[:, ib] = W_raw[ib]
         end
         W_mat = reinterpret(Float64, W_mat)
-        ρW_initial[gridap.np+1:end] = W_mat[:]
+        ρW_initial[gridap.np + 1 : end] = W_mat[:]
         @show abs(sum(G_ii))
     end
     if control.ρv < 1
