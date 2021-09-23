@@ -13,6 +13,7 @@ using NLopt
 using DelimitedFiles
 using Gridap.Geometry
 using Gridap.Fields
+using Gridap.CellData: Interpolable
 
 import ChainRulesCore: rrule
 import Gmsh: gmsh
@@ -38,6 +39,7 @@ export ρ_extract
 export GaussianD
 export GaussianY
 export num_contributing_values
+export Interpolated_Initial_Guess
 
 # Gridap FE function
 export GridapParameters
