@@ -61,8 +61,13 @@ export g_ρf
 export g_ρ
 export g_ρW
 export MatrixG
+export MatrixGk
 export gρW_optimize
 
+export gvρ_optimize
+export gρW_sumk
+export gρWk_optimize
+export gv_ρ
 
 include("Mesh_Periodic.jl")
 include("Mesh_CR.jl")
@@ -72,5 +77,6 @@ include("Helper.jl")
 include("GridapFE.jl")
 include("Model.jl")
 include("Objective.jl")
-
+include("ObjectivePeriodic.jl")
+include("ObjectiveWavegudie.jl")
 end
