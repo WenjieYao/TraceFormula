@@ -53,7 +53,7 @@ function Dgdρf(ρf_vec, O_mat, W_mat; phys, control, gridap)
     Z_mat = A_mat' \ dgdU
     #Z_mat = A_mat' \ ((O_mat * U_mat) / WBW)
     Wr_mat = W_mat / WBW
-    Wl_mat = W_mat * dgdU' * U_mat
+    Wl_mat = W_mat * (dgdU' * U_mat)
     #Wl_mat = W_mat / WBW * (U_mat' * O_mat * U_mat)
     
     dgdρf = zeros(num_free_dofs(gridap.FE_Pf))
