@@ -150,7 +150,7 @@ function g_ρW(ρW::Vector, grad::Vector; O_mat, phys, control, gridap)
 end
 
 
-function gρW_optimize(ρ_init, TOL = 1e-4, MAX_ITER = 500, IsQl = false; phys, control, gridap)
+function gρW_optimize(ρ_init, TOL = 1e-4, MAX_ITER = 500, OptAlg = :LD_MMA, IsQl = false; phys, control, gridap)
     # Assemble matrices
     N = num_free_dofs(gridap.FE_U)
     if IsQl
@@ -160,7 +160,7 @@ function gρW_optimize(ρ_init, TOL = 1e-4, MAX_ITER = 500, IsQl = false; phys, 
     end
     
     ##################### Optimize #################
-    opt = Opt(:LD_MMA, gridap.np + 2 * N * control.K)
+    opt = Opt(OptAlg, gridap.np + 2 * N * control.K)
     lb = zeros(gridap.np + 2 * N * control.K)
     lb[gridap.np + 1 : end] = - ones(2 * N * control.K) * Inf
     ub = ones(gridap.np + 2 * N * control.K)
@@ -184,9 +184,9 @@ function gρW_optimize(ρ_init, TOL = 1e-4, MAX_ITER = 500, IsQl = false; phys, 
         A_mat = MatrixA(ρth; phys, control, gridap)
         B_mat = MatrixB(ρth; control, gridap)
         
-        G_ii, W_raw, info = eigsolve(x -> MatrixG(x; A_mat, B_mat, O_mat), rand(ComplexF64, N), 5, :LM; krylovdim = 30)
+        G_ii, W_raw, info = eigsolve(x -> MatrixG(x; A_mat, B_mat, O_mat), rand(ComplexF64, N), min(5, control.K), :LM; krylovdim = 30)
         W_mat = rand(ComplexF64, N, control.K)
-        for ib = 1 : 5
+        for ib = 1 : min(5, control.K)
             W_mat[:, ib] = W_raw[ib]
         end
         W_mat = reinterpret(Float64, W_mat)
