@@ -56,7 +56,7 @@ end
 
 ξd(ρ, ϵmin, ϵmax, α)= 1 / ((ϵmin + (ϵmax - ϵmin) * ρ) * (1 + α * 1im)) - 1/ϵmin # in the design region
 
-a_base(u, v; phys) = (∇ .* (Λ(phys) * v) - 1im * phys.kb * v) ⊙ ((Λ(phys) .* ∇(u) + 1im * phys.kb * u)) - (phys.k^2 * phys.μ * (v * u))
+a_base(u, v; phys) = (x -> ξ0(x; phys)) * ((∇ .* (Λ(phys) * v) - 1im * phys.kb * v) ⊙ ((Λ(phys) .* ∇(u) + 1im * phys.kb * u))) - (phys.k^2 * phys.μ * (v * u))
 
 a_design(u, v, ρth; phys, control) = ((ρ -> ξd(ρ, phys.ϵ1, phys.ϵd, control.α)) ∘ ρth) * ((∇(v) - 1im *phys.kb * v) ⊙ (∇(u) + 1im *phys.kb * u)) - phys.k^2 * 1im * control.α * phys.μ * (v * u)
 
