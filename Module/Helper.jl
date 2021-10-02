@@ -52,7 +52,7 @@ end
 
 
 # Evaluate the number of contributing values (sum/total > cutoff) for a vector
-function num_contributing_values(Gvec::Vector, cutoff = 0.9)
+function num_contributing_values(Gvec::Vector, cutoff = 0.99)
     nmv = length(Gvec)
     gsum = sum(abs.(Gvec))
     gtemp = 0
@@ -68,7 +68,6 @@ end
 
 
 function Interpolated_Initial_Guess(gridap)
-    model_guess = GmshDiscreteModel("InitialGuess/geometry.msh")
     gridap_guess = GridapFE("InitialGuess/geometry.msh", 1, 2, ["DirichletEdges", "DirichletNodes"], ["DesignNodes", "DesignEdges"], ["Target"], [], true)
     ρW_temp = readdlm("InitialGuess/ρW_opt_value.txt", Float64)
     ρW_temp = ρW_temp[:]
@@ -79,4 +78,19 @@ function Interpolated_Initial_Guess(gridap)
     ρ_init = ρ_extract(get_free_dof_values(ρh_init); gridap)
     return ρ_init
 end
+
+function num_main_values(Gvec::Vector, cutoff=0.99)
+    nmv = length(Gvec)
+    gsum = sum(abs.(Gvec))
+    gtemp = 0
+    for i=1:length(Gvec)
+        gtemp += abs(Gvec[i])
+        if (gtemp)>cutoff*gsum
+            nmv = i
+            break
+        end
+    end
+    return nmv
+end
+
 
