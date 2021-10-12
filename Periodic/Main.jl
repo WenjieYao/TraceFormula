@@ -1,4 +1,4 @@
-push!(LOAD_PATH, "/Users/jayyao/Documents/Research/TraceFormula/Module")
+push!(LOAD_PATH, "/home/jayyao/TraceFormula/Module")
 using GridapEM
 using Gridap
 using DelimitedFiles
