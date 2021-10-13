@@ -142,7 +142,7 @@ function g_ρW(ρW::Vector, grad::Vector; O_mat, phys, control, gridap)
         grad[gridap.np + 1 : end] = 2 * control.Amp * dgdW[:]
     end
     g_value = g_ρ(ρ0; O_mat, W_mat, phys, control, gridap)
-    #@show g_value
+    @show g_value
     open("gvalue.txt", "a") do io
         write(io, "$g_value \n")
     end
