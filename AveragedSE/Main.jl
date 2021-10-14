@@ -12,7 +12,7 @@ using LinearAlgebra
 λ = 1.0           # Wavelength
 L = 2.5           # Width of the rectangular domain
 H = 2.5           # Height of the rectangular domain
-rd = 0.5          # Radius of the design domain circle
+rd = 0.9          # Radius of the design domain circle
 rt = rd + 0.2     # Radius of the target circle
 dpml = 0.5        # Thickness of PML
 
@@ -101,7 +101,7 @@ control = ControllingParameters(flag_f, flag_t, r, β, η, α, nparts, nkx, K, A
 # ρ_init[ρ_init .> 0] .= 0.5
 # @show sum(ρ_init) / gridap.np, maximum(ρ_init)
 
-ρ_init = ones(gridap.np) * 0.4
+ρ_init = ones(gridap.np) * 0.5
 #ρW_temp = readdlm("ρW_opt_value.txt", Float64)
 #ρW_temp = ρW_temp[:]
 #ρ_init = ρW_temp[1 : gridap.np]
