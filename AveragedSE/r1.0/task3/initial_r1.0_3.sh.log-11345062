@@ -61,3 +61,18 @@ Info    : 60 entities
 Info    : 37759 nodes
 Info    : 76336 elements
 Info    : Done reading 'geometry.msh'
+┌ Warning: You appear to be using MPI.jl with the default MPI binary on a cluster.
+│ We recommend using the system-provided MPI, see the Configuration section of the MPI.jl docs.
+└ @ MPI ~/.julia/packages/MPI/biSVL/deps/deps.jl:15
+┌ Warning: Assignment to `β` in soft scope is ambiguous because a global variable by the same name exists: `β` will be treated as a new local. Disambiguate by using `local β` to suppress this warning or `global β` to assign to the existing global variable.
+└ @ ~/Research/TraceFormula/AveragedSE/r1.0/task3/initial_search.jl:118
+┌ Warning: Assignment to `α` in soft scope is ambiguous because a global variable by the same name exists: `α` will be treated as a new local. Disambiguate by using `local α` to suppress this warning or `global α` to assign to the existing global variable.
+└ @ ~/Research/TraceFormula/AveragedSE/r1.0/task3/initial_search.jl:119
+┌ Warning: Assignment to `K` in soft scope is ambiguous because a global variable by the same name exists: `K` will be treated as a new local. Disambiguate by using `local K` to suppress this warning or `global K` to assign to the existing global variable.
+└ @ ~/Research/TraceFormula/AveragedSE/r1.0/task3/initial_search.jl:120
+┌ Warning: Assignment to `phys` in soft scope is ambiguous because a global variable by the same name exists: `phys` will be treated as a new local. Disambiguate by using `local phys` to suppress this warning or `global phys` to assign to the existing global variable.
+└ @ ~/Research/TraceFormula/AveragedSE/r1.0/task3/initial_search.jl:121
+┌ Warning: Assignment to `control` in soft scope is ambiguous because a global variable by the same name exists: `control` will be treated as a new local. Disambiguate by using `local control` to suppress this warning or `global control` to assign to the existing global variable.
+└ @ ~/Research/TraceFormula/AveragedSE/r1.0/task3/initial_search.jl:122
+┌ Warning: Assignment to `g_opt` in soft scope is ambiguous because a global variable by the same name exists: `g_opt` will be treated as a new local. Disambiguate by using `local g_opt` to suppress this warning or `global g_opt` to assign to the existing global variable.
+└ @ ~/Research/TraceFormula/AveragedSE/r1.0/task3/initial_search.jl:125
