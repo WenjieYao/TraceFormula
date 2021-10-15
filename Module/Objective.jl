@@ -142,7 +142,6 @@ function g_ρW(ρW::Vector, grad::Vector; O_mat, phys, control, gridap)
         grad[gridap.np + 1 : end] = 2 * control.Amp * dgdW[:]
     end
     g_value = g_ρ(ρ0; O_mat, W_mat, phys, control, gridap)
-    @show g_value
     open("gvalue.txt", "a") do io
         write(io, "$g_value \n")
     end
@@ -171,7 +170,7 @@ function gρW_optimize(ρ_init, TOL = 1e-4, MAX_ITER = 500, OptAlg = :LD_MMA, Is
     opt.maxeval = MAX_ITER
     opt.max_objective = (ρW, grad) -> g_ρW(ρW, grad; O_mat, phys, control, gridap)
     if (length(ρ_init) == 0)
-        ρW_initial = readdlm("ρW_opt_value.txt", Float64)
+        ρW_initial = readdlm("pW_opt_value.txt", Float64)
         ρW_initial = ρW_initial[:]
     else
         ρ_initial = ρ_init
@@ -191,7 +190,6 @@ function gρW_optimize(ρ_init, TOL = 1e-4, MAX_ITER = 500, OptAlg = :LD_MMA, Is
         end
         W_mat = reinterpret(Float64, W_mat)
         ρW_initial[gridap.np + 1 : end] = W_mat[:]
-        @show abs(sum(G_ii))
     end
     if control.ρv < 1
         inequality_constraint!(opt, (x, g) -> VolumeConstraint(x, g; control, gridap), 1e-2)
@@ -200,7 +198,6 @@ function gρW_optimize(ρ_init, TOL = 1e-4, MAX_ITER = 500, OptAlg = :LD_MMA, Is
         equality_constraint!(opt, (x, g) -> LWConstraint(x, g; control, gridap), 1e-8)
     end
     (g_opt, ρW_opt, ret) = optimize(opt, ρW_initial)
-    @show numevals = opt.numevals # the number of function evaluations
     
     return g_opt / control.Amp, ρW_opt
 end

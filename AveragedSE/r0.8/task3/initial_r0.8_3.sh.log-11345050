@@ -1,0 +1,63 @@
+Info    : Clearing all models and views...
+Info    : Done clearing all models and views
+Info    : Meshing 1D...
+Info    : Meshing curve 1 (Line)
+Info    : Meshing curve 2 (Line)
+Info    : Meshing curve 3 (Line)
+Info    : Meshing curve 4 (Line)
+Info    : Meshing curve 5 (Line)
+Info    : Meshing curve 6 (Line)
+Info    : Meshing curve 7 (Line)
+Info    : Meshing curve 8 (Line)
+Info    : Meshing curve 9 (Line)
+Info    : Meshing curve 10 (Line)
+Info    : Meshing curve 11 (Line)
+Info    : Meshing curve 12 (Line)
+Info    : Meshing curve 13 (Line)
+Info    : Meshing curve 14 (Line)
+Info    : Meshing curve 15 (Line)
+Info    : Meshing curve 16 (Line)
+Info    : Meshing curve 17 (Line)
+Info    : Meshing curve 18 (Line)
+Info    : Meshing curve 19 (Line)
+Info    : Meshing curve 20 (Line)
+Info    : Meshing curve 21 (Line)
+Info    : Meshing curve 22 (Line)
+Info    : Meshing curve 23 (Line)
+Info    : Meshing curve 24 (Line)
+Info    : Meshing curve 25 (Circle)
+Info    : Meshing curve 26 (Circle)
+Info    : Meshing curve 27 (Circle)
+Info    : Meshing curve 28 (Circle)
+Info    : Done meshing 1D (0.00873 s)
+Info    : Meshing 2D...
+Info    : Meshing surface 1 (Plane, Frontal)
+Info    : Meshing surface 2 (Plane, Frontal)
+Error   : LU factorization and substitution requires LAPACK
+Info    : Meshing surface 3 (Plane, Frontal)
+Info    : Meshing surface 4 (Plane, Frontal)
+Error   : LU factorization and substitution requires LAPACK
+Info    : Meshing surface 5 (Plane, Frontal)
+Error   : LU factorization and substitution requires LAPACK
+Info    : Meshing surface 6 (Plane, Frontal)
+Error   : LU factorization and substitution requires LAPACK
+Info    : Meshing surface 7 (Plane, Frontal)
+Info    : Meshing surface 8 (Plane, Frontal)
+Error   : LU factorization and substitution requires LAPACK
+Info    : Meshing surface 9 (Plane, Frontal)
+Info    : Meshing surface 10 (Plane, Frontal)
+Info    : Done meshing 2D (0.88333 s)
+Info    : 31001 vertices 63186 elements
+Error   : ------------------------------
+Error   : Mesh generation error summary
+Error   :     0 warnings
+Error   :     5 errors
+Error   : Check the full log for details
+Error   : ------------------------------
+Info    : Writing 'geometry.msh'...
+Info    : Done writing 'geometry.msh'
+Info    : Reading 'geometry.msh'...
+Info    : 60 entities
+Info    : 30999 nodes
+Info    : 62666 elements
+Info    : Done reading 'geometry.msh'

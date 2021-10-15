@@ -69,7 +69,7 @@ end
 
 function Interpolated_Initial_Guess(gridap)
     gridap_guess = GridapFE("InitialGuess/geometry.msh", 1, 2, ["DirichletEdges", "DirichletNodes"], ["DesignNodes", "DesignEdges"], ["Target"], [], true)
-    ρW_temp = readdlm("InitialGuess/ρW_opt_value.txt", Float64)
+    ρW_temp = readdlm("InitialGuess/pW_opt_value.txt", Float64)
     ρW_temp = ρW_temp[:]
     ρ_init_guess = ρW_temp[1 : gridap_guess.np]
     ρh_guess = FEFunction(gridap_guess.FE_P, ρ_extend(ρ_init_guess; gridap=gridap_guess))

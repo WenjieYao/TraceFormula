@@ -75,18 +75,6 @@ function gv_ρ(ρ0::Vector, grad::Vector; q_vec, phys, control, gridap)
     open("gvalue.txt", "a") do io
         write(io, "$g_value \n")
     end
-    # tc = readdlm("tcount.txt", Int64)[1]
-    # open("PV/pvalue$(tc).txt", "w") do iop
-    #     for i=1:gridap.np
-    #         x_temp = ρ0[i]
-    #         write(iop, "$x_temp \n")
-    #     end
-    # end
-    # tc +=1
-    # open("tcount.txt", "w") do iop
-    #     write(iop, "$tc \n")
-    # end
-
     return g_value * control.Amp
 end
 
@@ -102,7 +90,7 @@ function gvρ_optimize(ρ_init, q_vec, TOL = 1e-4, MAX_ITER = 500; phys, control
     opt.maxeval = MAX_ITER
     opt.max_objective = (ρ0, grad) -> gv_ρ(ρ0, grad; q_vec, phys, control, gridap)
     if (length(ρ_init)==0)
-        ρ_initial = readdlm("ρ_opt_value.txt", Float64)
+        ρ_initial = readdlm("p_opt_value.txt", Float64)
         ρ_initial = ρ_initial[:]
     else
         ρ_initial = ρ_init[:]
@@ -115,7 +103,6 @@ function gvρ_optimize(ρ_init, q_vec, TOL = 1e-4, MAX_ITER = 500; phys, control
     end
 
     (g_opt, ρ_opt, ret) = optimize(opt, ρ_initial)
-    @show numevals = opt.numevals # the number of function evaluations
     
     return g_opt / control.Amp, ρ_opt
 end
