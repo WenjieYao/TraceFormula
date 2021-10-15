@@ -64,7 +64,6 @@ function gρW_sumk(ρW::Vector, grad::Vector;ids, kx_s, dkx, O_mat, phys, contro
         end
     end
     #gvalue = sum(gk)*dkx/2/π*control.Amp
-    @show gvalue/control.Amp
     open("gvalue.txt", "a") do io
         write(io, "$(gvalue/control.Amp) \n")
     end
