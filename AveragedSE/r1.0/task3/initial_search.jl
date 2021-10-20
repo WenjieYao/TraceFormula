@@ -93,12 +93,12 @@ phys = PhysicalParameters(k, kb, ω, ϵ1, ϵ2, ϵ3, ϵd, μ, R, σs, dpml, LHp, 
 control = ControllingParameters(flag_f, flag_t, r, β, η, α, nparts, nkx, K, Amp, Bρ, ρv, c, ηe, ηd)
 
 ρ_circ(x, r) = (x[1]^2 + x[2]^2) < r^2 ? 1 : 0
-r_init = (rd - rd / sqrt(2)) * 0 + rd / sqrt(2)
+r_init = (rd - rd / sqrt(2)) * 0.6 + rd / sqrt(2)
 lc_temp(v) = ∫(v * x->ρ_circ(x, r_init))gridap.dΩ
 ρc_vec = assemble_vector(lc_temp, gridap.FE_P)
 ρ_init = ρ_extract(ρc_vec; gridap)
 #ρ_init[ρ_init .< 0.5] .= 0
-ρ_init[ρ_init .> 0] .= 1.0
+ρ_init[ρ_init .> 0] .= 0.5
 # @show sum(ρ_init) / gridap.np, maximum(ρ_init)
 
 #ρ_init = ones(gridap.np) * 0.5
@@ -109,10 +109,11 @@ lc_temp(v) = ∫(v * x->ρ_circ(x, r_init))gridap.dΩ
 #ρ_init[ρ_init .>= 0.5] .= 1.0
 #r = [0.02 * λ, 0.02 * λ]  # Filter radius
 #Q_list = [20, 50, 100, 500, 1000, 1000, 1000]
-Q_list = [10, 20, 30, 50, 100, 100, 100]
+Q_list = [10, 10, 10, 10, 10, 10, 10]
 #Q_list = [1000, 1000, 1000, 1000, 1000]
 #β_list = [80.0, 80.0, 80.0, 80.0, 80.0]
 β_list = [5.0, 10.0, 20.0, 30.0, 40.0, 60.0, 80.0]
+
 
 g_opt = 0
 for bi = 1 : 7
