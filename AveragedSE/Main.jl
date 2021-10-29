@@ -1,4 +1,4 @@
-push!(LOAD_PATH, "/home/jayyao/TraceFormula/Module")
+push!(LOAD_PATH, "/home/gridsan/wyao/Research/TraceFormula/Module")
 #push!(LOAD_PATH, "/Users/jayyao/Documents/Research/TraceFormula/Module")
 using GridapEM
 using Gridap
@@ -12,7 +12,7 @@ using LinearAlgebra
 λ = 1.0           # Wavelength
 L = 2.5           # Width of the rectangular domain
 H = 2.5           # Height of the rectangular domain
-rd = 0.9          # Radius of the design domain circle
+rd = 0.7          # Radius of the design domain circle
 rt = rd + 0.2     # Radius of the target circle
 dpml = 0.5        # Thickness of PML
 
@@ -92,50 +92,38 @@ phys = PhysicalParameters(k, kb, ω, ϵ1, ϵ2, ϵ3, ϵd, μ, R, σs, dpml, LHp, 
 
 control = ControllingParameters(flag_f, flag_t, r, β, η, α, nparts, nkx, K, Amp, Bρ, ρv, c, ηe, ηd)
 
-# ρ_circ(x, r) = (x[1]^2 + x[2]^2) < r^2 ? 1 : 0
-# r_init = (rd - rd / sqrt(2)) * 1 + rd / sqrt(2)
-# lc_temp(v) = ∫(v * x->ρ_circ(x, r_init))gridap.dΩ
-# ρc_vec = assemble_vector(lc_temp, gridap.FE_P)
-# ρ_init = ρ_extract(ρc_vec; gridap)
-# #ρ_init[ρ_init .< 0.5] .= 0
-# ρ_init[ρ_init .> 0] .= 0.5
-# @show sum(ρ_init) / gridap.np, maximum(ρ_init)
 
-ρ_init = ones(gridap.np) * 0.5
-#ρW_temp = readdlm("ρW_opt_value.txt", Float64)
-#ρW_temp = ρW_temp[:]
-#ρ_init = ρW_temp[1 : gridap.np]
-#ρ_init[ρ_init .< 0.5] .= 0
-#ρ_init[ρ_init .>= 0.5] .= 1.0
-#r = [0.02 * λ, 0.02 * λ]  # Filter radius
-Q_list = [20, 50, 100, 500, 1000, 1000, 1000]
-#Q_list = [1000, 1000, 1000, 1000, 1000]
-#β_list = [80.0, 80.0, 80.0, 80.0, 80.0]
-β_list = [5.0, 10.0, 20.0, 30.0, 40.0, 60.0, 80.0]
+Nri = 101
+α = 1.0 / (2 * 100)
+control = ControllingParameters(flag_f, flag_t, r, β, η, α, nparts, nkx, K, Amp, Bρ, ρv, c, ηe, ηd)
+Powers = zeros(Nri)
+Rs = zeros(Nri)
+Ncv = zeros(Nri)
+Ncv2 = zeros(Nri)
+for ri = 1 : Nri
+    rd = (ri - 1) * 0.9 / (Nri - 1) + 0.1
+    Rs[ri] = rd
+    rt = rd + 0.2
+    geo_param = CirRecGeometry(L, H, rd, rt, dpml, l1, l2, l3)
+    meshfile_name = "geometry.msh"
+    MeshGenerator(geo_param, meshfile_name)
+    gridap = GridapFE(meshfile_name, 1, 2, ["DirichletEdges", "DirichletNodes"], ["DesignNodes", "DesignEdges"], ["Target"], [], flag_f)
+    
+    N = num_free_dofs(gridap.FE_U)
+    ρ0 = ones(gridap.np)
+    ρf_vec = ρf_ρ0(ρ0; control, gridap)
+    ρfh = FEFunction(gridap.FE_Pf, ρf_vec)
+    ρth = (ρf -> Threshold(ρf; control)) ∘ ρfh
+        
+    A_mat = MatrixA(ρth; phys, control, gridap)
+    B_mat = MatrixB(ρth; control, gridap)
+    #@show sum(∫(ρth)gridap.dΩ_d) / sum(∫(1)gridap.dΩ_d)
 
-g_opt = 0
-for bi = 1 : 7
-    β = β_list[bi]
-    α = 1.0 / (2 * Q_list[bi])
-    K = 20
-    phys = PhysicalParameters(k, kb, ω, ϵ1, ϵ2, ϵ3, ϵd, μ, R, σs, dpml, LHp, LHn, wg_center, wg_size)
-    control = ControllingParameters(flag_f, flag_t, r, β, η, α, nparts, nkx, K, Amp, Bρ, ρv, c, ηe, ηd)
-
-    if bi == 1
-        g_opt, ρW_opt = gρW_optimize(ρ_init, 1e-12, 400, :LD_MMA; phys,control, gridap)
-    else
-        g_opt, ρW_opt = gρW_optimize([], 1e-12, 400, :LD_MMA; phys, control, gridap)
-    end
-    if isfile("ρW_opt.value.txt")
-        run(`rm ρW_opt_value.txt`)
-    end
-    open("ρW_opt_value.txt", "w") do iop
-        for i = 1 : length(ρW_opt)
-            ρW_temp = ρW_opt[i]
-            write(iop, "$ρW_temp \n")
-        end
-    end
-    open("g_opt_value.txt", "a") do io
-        write(io, "$g_opt \n")
-    end
+    O_mat = MatrixOc(phys.k, phys.ϵ1; gridap)
+    
+    Neig = Int(ceil(ri / Nri * 30))
+    G_ii, W_raw, info = eigsolve(x -> MatrixG(x; A_mat, B_mat, O_mat), rand(ComplexF64, N), Neig, :LM; krylovdim = 50)
+    Ncv[ri] = num_contributing_values(G_ii, 0.99)
+    Ncv2[ri] = num_contributing_values(G_ii, 0.9)
+    @show Powers[ri] = sum(abs.(G_ii))
 end
