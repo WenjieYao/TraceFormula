@@ -1,0 +1,130 @@
+"""
+Gmsh function that creates a rectangular domain with center circle
+
+Example paramters
+λ = 1.0           # Wavelength
+L = 2.5           # Width of the rectangular domain
+H = 2.5           # Height of the rectangular domain
+rt = 1.2          # Radius of the target circle
+dpml = 0.5        # Thickness of PML
+
+# Characteristic length (controls the resolution, smaller the finer)
+resol = 25.0      # Number of points per wavelength
+l1 = λ/resol      # Normal region
+l2 = l1/2.0       # Design region
+l3 = 2*l1         # PML
+
+geo_param = CirRecGeometry(L, H, rd, rt, dpml, l1, l2, l3)
+
+"""
+
+struct RecGeometry
+    L::Float64           # Length of the normal region  
+    H::Float64           # Height of the air region
+    rt::Float64          # Radius the target circle
+    dpml::Float64        # Thickness of the PML
+    # Characteristic length (controls the resolution, smaller the finer)
+    l1::Float64          # Normal region
+    l2::Float64          # Design region
+    l3::Float64          # PML 
+end
+
+
+function MeshGenerator(geo_param::RecGeometry, meshfile_name::String)
+    gmsh.initialize()
+    gmsh.option.setNumber("General.Terminal", 1)
+    gmsh.option.setNumber("Mesh.Algorithm", 6)
+    gmsh.clear()
+    gmsh.model.add("geometry") # name it whatever you want
+
+    # Add points
+    gmsh.model.geo.addPoint(-geo_param.L/2-geo_param.dpml, -geo_param.H/2-geo_param.dpml, 0, geo_param.l3,  1)
+    gmsh.model.geo.addPoint(-geo_param.L/2     , -geo_param.H/2-geo_param.dpml, 0, geo_param.l3,  2)
+    gmsh.model.geo.addPoint( geo_param.L/2     , -geo_param.H/2-geo_param.dpml, 0, geo_param.l3,  3)
+    gmsh.model.geo.addPoint( geo_param.L/2+geo_param.dpml, -geo_param.H/2-geo_param.dpml, 0, geo_param.l3,  4)
+    gmsh.model.geo.addPoint(-geo_param.L/2-geo_param.dpml, -geo_param.H/2     , 0, geo_param.l3,  5)
+    gmsh.model.geo.addPoint(-geo_param.L/2     , -geo_param.H/2     , 0, geo_param.l1,  6)
+    gmsh.model.geo.addPoint( geo_param.L/2     , -geo_param.H/2     , 0, geo_param.l1,  7)
+    gmsh.model.geo.addPoint( geo_param.L/2+geo_param.dpml, -geo_param.H/2   , 0, geo_param.l3,  8)
+    gmsh.model.geo.addPoint(-geo_param.L/2-geo_param.dpml,  geo_param.H/2   , 0, geo_param.l3,  9)
+    gmsh.model.geo.addPoint(-geo_param.L/2     , geo_param.H/2      , 0, geo_param.l1, 10)
+    gmsh.model.geo.addPoint( geo_param.L/2     , geo_param.H/2      , 0, geo_param.l1, 11)
+    gmsh.model.geo.addPoint( geo_param.L/2+geo_param.dpml, geo_param.H/2      , 0, geo_param.l3, 12)
+    gmsh.model.geo.addPoint(-geo_param.L/2-geo_param.dpml, geo_param.H/2+geo_param.dpml , 0, geo_param.l3, 13)
+    gmsh.model.geo.addPoint(-geo_param.L/2     , geo_param.H/2+geo_param.dpml , 0, geo_param.l3, 14)
+    gmsh.model.geo.addPoint( geo_param.L/2     , geo_param.H/2+geo_param.dpml , 0, geo_param.l3, 15)
+    gmsh.model.geo.addPoint( geo_param.L/2+geo_param.dpml, geo_param.H/2+geo_param.dpml , 0, geo_param.l3, 16)
+    gmsh.model.geo.addPoint(-geo_param.rt      , 0        , 0, geo_param.l2, 17)
+    gmsh.model.geo.addPoint( 0       , 0       , 0, geo_param.l2, 18)
+    gmsh.model.geo.addPoint( geo_param.rt      , 0        , 0, geo_param.l2, 19)
+    # Add lines
+    gmsh.model.geo.addLine(  1,  2,  1)
+    gmsh.model.geo.addLine(  2,  6,  2)
+    gmsh.model.geo.addLine(  6,  5,  3)
+    gmsh.model.geo.addLine(  5,  1,  4)
+    gmsh.model.geo.addLine(  2,  3,  5)
+    gmsh.model.geo.addLine(  3,  7,  6)
+    gmsh.model.geo.addLine(  7,  6,  7)
+    gmsh.model.geo.addLine(  3,  4,  8)
+    gmsh.model.geo.addLine(  4,  8,  9)
+    gmsh.model.geo.addLine(  8,  7, 10)
+    gmsh.model.geo.addLine(  6, 10, 11)
+    gmsh.model.geo.addLine( 10,  9, 12)
+    gmsh.model.geo.addLine(  9,  5, 13)
+    gmsh.model.geo.addLine(  7, 11, 14)
+    gmsh.model.geo.addLine( 11, 10, 15)
+    gmsh.model.geo.addLine(  8, 12, 16)
+    gmsh.model.geo.addLine( 12, 11, 17)
+    gmsh.model.geo.addLine( 10, 14, 18)
+    gmsh.model.geo.addLine( 14, 13, 19)
+    gmsh.model.geo.addLine( 13,  9, 20)
+    gmsh.model.geo.addLine( 11, 15, 21)
+    gmsh.model.geo.addLine( 15, 14, 22)
+    gmsh.model.geo.addLine( 12, 16, 23)
+    gmsh.model.geo.addLine( 16, 15, 24)
+    gmsh.model.geo.addCircleArc( 17, 18, 19, 25)
+    gmsh.model.geo.addCircleArc( 19, 18, 17, 26)
+    # Construct curve loops and surfaces 
+    gmsh.model.geo.addCurveLoop([  1,  2,  3,  4], 1)
+    gmsh.model.geo.addCurveLoop([  5,  6,  7, -2], 2)
+    gmsh.model.geo.addCurveLoop([  8,  9, 10, -6], 3)
+    gmsh.model.geo.addCurveLoop([ 11, 12, 13, -3], 4)
+    gmsh.model.geo.addCurveLoop([ -7, 14, 15,-11], 5)
+    gmsh.model.geo.addCurveLoop([-10, 16, 17,-14], 6)
+    gmsh.model.geo.addCurveLoop([-12, 18, 19, 20], 7)
+    gmsh.model.geo.addCurveLoop([-15, 21, 22,-18], 8)
+    gmsh.model.geo.addCurveLoop([-17, 23, 24,-21], 9)
+    gmsh.model.geo.addCurveLoop([ 25, 26], 10)
+    #gmsh.model.geo.addCurveLoop([ 25, 26,31], 10)
+    
+    gmsh.model.geo.addPlaneSurface([ 1],  1)
+    gmsh.model.geo.addPlaneSurface([ 2],  2)
+    gmsh.model.geo.addPlaneSurface([ 3],  3)
+    gmsh.model.geo.addPlaneSurface([ 4],  4)
+    gmsh.model.geo.addPlaneSurface([ 5,10],  5)
+    gmsh.model.geo.addPlaneSurface([ 6],  6)
+    gmsh.model.geo.addPlaneSurface([ 7],  7)
+    gmsh.model.geo.addPlaneSurface([ 8],  8)
+    gmsh.model.geo.addPlaneSurface([ 9],  9)
+    gmsh.model.geo.addPlaneSurface([10], 10)
+    gmsh.model.geo.synchronize()
+
+    # Physical groups
+    gmsh.model.addPhysicalGroup(0, [1,2,3,4,5,8,9,12,13,14,15,16], 1)
+    gmsh.model.setPhysicalName(0, 1, "DirichletNodes")
+    gmsh.model.addPhysicalGroup(1, [1,4,5,8,9,13,16,20,19,22,24,23], 3)
+    gmsh.model.setPhysicalName(1, 3, "DirichletEdges")
+    gmsh.model.addPhysicalGroup(2, [1,2,3,4,6,7,8,9], 5)
+    gmsh.model.setPhysicalName(2, 5, "PML")
+    gmsh.model.addPhysicalGroup(2, [10], 6)
+    gmsh.model.setPhysicalName(2, 6, "Design")
+    gmsh.model.addPhysicalGroup(2, [5], 7)
+    gmsh.model.setPhysicalName(2, 7, "Air")
+    gmsh.model.addPhysicalGroup(1, [25, 26], 8)
+    gmsh.model.setPhysicalName(1, 8, "Target")
+    gmsh.model.mesh.generate(2)
+    
+    # ... and save it to disk
+    gmsh.write(meshfile_name)
+    gmsh.finalize()
+end
